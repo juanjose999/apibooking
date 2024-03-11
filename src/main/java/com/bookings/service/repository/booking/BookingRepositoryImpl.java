@@ -57,20 +57,51 @@ public class BookingRepositoryImpl implements BookingRepository {
     }
 
 
-
     @Override
-    public Boolean updateBooking(String idBooking, Booking booking) {
+    public Boolean updateBooking(String idBooking, Booking updatedBooking) {
         Optional<Booking> searchBooking = bookingMongoRepository.findById(idBooking);
-        if(searchBooking.isPresent()){
-            Booking existingBooking = bookingMongoRepository.findById(idBooking).get();
-            existingBooking.setNameHotel(booking.getNameHotel());
-            existingBooking.setUserData(booking.getUserData());
 
+        if (searchBooking.isPresent()) {
+            Booking existingBooking = searchBooking.get();
+
+            // Update booking information
+            existingBooking.setNameHotel(updatedBooking.getNameHotel());
+            existingBooking.setRoomNumber(updatedBooking.getRoomNumber());
+            existingBooking.setStartBooking(updatedBooking.getStartBooking());
+            existingBooking.setEndBooking(updatedBooking.getEndBooking());
+
+            // Update or add user information
+            List<User> updatedUsers = updatedBooking.getUserData();
+            List<User> existingUsers = existingBooking.getUserData();
+
+            for (User updatedUser : updatedUsers) {
+                Optional<User> existingUserOptional = existingUsers.stream()
+                        .filter(user -> user.getId().equals(updatedUser.getId()))
+                        .findFirst();
+
+                if (existingUserOptional.isPresent()) {
+                    // Update existing user details
+                    User existingUser = existingUserOptional.get();
+                    existingUser.setFirstName(updatedUser.getFirstName());
+                    existingUser.setLastName(updatedUser.getLastName());
+                    existingUser.setBirthDate(updatedUser.getBirthDate());
+                    existingUser.setEmail(updatedUser.getEmail());
+                    // Update other user details as needed
+                } else {
+                    // Add a new user if not found
+                    existingUsers.add(updatedUser);
+                }
+            }
+
+            // Save the updated booking (this should also cascade the changes to users)
             bookingMongoRepository.save(existingBooking);
             return true;
         }
+
         return false;
     }
+
+
 
     @Override
     public Boolean deleteBooking(String idBooking) {

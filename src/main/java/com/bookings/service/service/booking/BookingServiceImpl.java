@@ -6,6 +6,7 @@ import com.bookings.service.dto.booking.BookingResponseDto;
 import com.bookings.service.dto.user.UserDto;
 import com.bookings.service.dto.user.UserMapper;
 import com.bookings.service.dto.user.UserResponseDto;
+import com.bookings.service.model.booking.Booking;
 import com.bookings.service.repository.booking.BookingRepository;
 import com.bookings.service.repository.user.UserRepository;
 import com.bookings.service.service.user.UserService;
@@ -38,7 +39,12 @@ public class BookingServiceImpl implements BookingService{
 
     @Override
     public Optional<BookingResponseDto> findBookingById(String idBooking) {
-        return Optional.of(BookingMapper.bookingToBookingResponseDto(bookingRepository.findBookingById(idBooking)));
+        Booking booking = bookingRepository.findBookingById(idBooking);
+        if(booking != null){
+            return Optional.of(BookingMapper.bookingToBookingResponseDto(booking));
+        }else {
+            return Optional.empty();
+        }
     }
 
     @Override

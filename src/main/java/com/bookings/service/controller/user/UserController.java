@@ -32,7 +32,7 @@ public class UserController {
         userService.createUser(userEntity);
         UserDto adminUserEntity = new UserDto("Ada", "Admin", fecha, "admin@mail.com", "passw0rd");
         UserResponseDto userCreated = userService.createUser(adminUserEntity);
-        createUserAdmin(new UserDto("Super", "admin", fecha, "super@mail.com", "123"));
+        createUserAdmin(new UserDto("Super", "admin", fecha, "super@mail.com", "wer99"));
     }
 
 

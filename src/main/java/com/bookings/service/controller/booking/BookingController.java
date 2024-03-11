@@ -33,14 +33,14 @@ public class BookingController {
     }
 
     @GetMapping("/{idBooking}")
-    public ResponseEntity<BookingResponseDto> findBookingById(@PathVariable String idBooking) {
+    public ResponseEntity<?> findBookingById(@PathVariable String idBooking) {
         try {
-            return bookingService.findBookingById(idBooking)
+            Optional<BookingResponseDto> bookingOptional = bookingService.findBookingById(idBooking);
+            return bookingOptional
                     .map(b -> new ResponseEntity<>(b, HttpStatus.OK))
-                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    .orElse(new ResponseEntity("Booking not found with ID: " + idBooking, HttpStatus.NOT_FOUND));
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("Booking not found with ID: " + idBooking, HttpStatus.NOT_FOUND);
         }
     }
     @RolesAllowed(ADMIN_ROLE)
